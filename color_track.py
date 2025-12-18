@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import serial
 
 cap = cv2.VideoCapture(0)
 
@@ -9,6 +10,14 @@ max_area_limit = 50000
 min_speed = 100
 max_speed = 255
 box_size = 150 
+
+# --- SERIAL COMMUNICATION ---
+try:
+    ser = serial.Serial('COM5', 9600, timeout=1) # Change 'COM3' to your Arduino Port
+    print("Serial Connected")
+except:
+    print("Serial Not Connected")
+    ser = None
 
 print("----------------------------------------------------------------")
 print("SET 1 (Drive): F (Forward), S (Stop), L (Left), R (Right)")
@@ -111,9 +120,16 @@ while True:
             cv2.putText(frame, f"Ang:  {tilt_cmd}", (30, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 3)
             cv2.putText(frame, f"SPD:   {speed}", (30, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
 
-            # Print concise string for Serial/WiFi
-            # Format: "D:F T:C S:255"
-            print(f"Drive:{drive_cmd} | Tilt:{tilt_cmd} | Speed:{speed}")
+            # --- PREPARE SINGLE LINE STRING ---
+            # Format: "car : F | Ang : U"
+            data_to_send = f"car : {drive_cmd} | Ang : {tilt_cmd}\n"
+            
+            # Print to console to verify
+            print(data_to_send, end="") 
+
+            # --- SERIAL SEND (Single Line) ---
+            if ser:
+                ser.write(data_to_send.encode())  # Sends the whole string at once
 
     cv2.imshow('Dual Control Sets', frame)
 
