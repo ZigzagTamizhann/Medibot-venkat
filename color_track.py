@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
 import serial
-
-cap = cv2.VideoCapture(0)
+import time
 
 # --- CONFIGURATION ---
 min_area = 3000        
@@ -12,12 +11,17 @@ max_speed = 255
 box_size = 150 
 
 # --- SERIAL COMMUNICATION ---
-try:
-    ser = serial.Serial('COM5', 115200, timeout=1) # Change 'COM3' to your Arduino Port
-    print("Serial Connected")
-except:
-    print("Serial Not Connected")
-    ser = None
+ser = None
+print("Waiting for Serial Connection...")
+while ser is None:
+    try:
+        ser = serial.Serial('COM5', 115200, timeout=1) # Change 'COM3' to your Arduino Port
+        print("Serial Connected")
+    except:
+        print("Serial Not Connected. Retrying...")
+        time.sleep(2)
+
+cap = cv2.VideoCapture(0)
 
 print("----------------------------------------------------------------")
 print("SET 1 (Drive): F (Forward), S (Stop), L (Left), R (Right)")
