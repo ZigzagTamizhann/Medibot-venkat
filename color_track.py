@@ -12,7 +12,7 @@ box_size = 150
 
 # --- SERIAL COMMUNICATION ---
 ser = None
-print("Waiting for Serial Connection...")
+#print("Waiting for Serial Connection...")
 while ser is None:
     try:
         ser = serial.Serial('COM5', 115200, timeout=1) # Change 'COM3' to your Arduino Port
@@ -21,12 +21,15 @@ while ser is None:
         print("Serial Not Connected. Retrying...")
         time.sleep(2)
 
+last_send_time = 0
+send_interval = 0.1  # Send data every 0.1 seconds (100ms) to prevent lag
+
 cap = cv2.VideoCapture(0)
 
-print("----------------------------------------------------------------")
-print("SET 1 (Drive): F (Forward), S (Stop), L (Left), R (Right)")
-print("SET 2 (Tilt):  U (Up), D (Down), C (Center)")
-print("----------------------------------------------------------------")
+#print("----------------------------------------------------------------")
+#print("SET 1 (Drive): F (Forward), S (Stop), L (Left), R (Right)")
+#print("SET 2 (Tilt):  U (Up), D (Down), C (Center)")
+#print("----------------------------------------------------------------")
 
 while True:
     ret, frame = cap.read()
@@ -75,6 +78,9 @@ while True:
             
             cv2.rectangle(frame, (x, y), (x + w_rect, y + h_rect), (0, 255, 0), 2)
             cv2.circle(frame, (obj_cx, obj_cy), 8, (0, 0, 255), -1)
+            # Draw moving crosshair lines (Horizontal and Vertical)
+            cv2.line(frame, (0, obj_cy), (w, obj_cy), (0, 0, 255), 2)
+            cv2.line(frame, (obj_cx, 0), (obj_cx, h), (0, 0, 255), 2)
 
             # Speed Calc
             speed = np.interp(area, [min_area, max_area_limit], [max_speed, min_speed])
@@ -128,12 +134,13 @@ while True:
             # Format: "car : F | Ang : U"
             data_to_send = f"car : {drive_cmd} | Ang : {tilt_cmd}\n"
             
-            # Print to console to verify
-            print(data_to_send, end="") 
+            # #print to console to verify
+            #print(data_to_send, end="") 
 
             # --- SERIAL SEND (Single Line) ---
-            if ser:
+            if ser and (time.time() - last_send_time > send_interval):
                 ser.write(data_to_send.encode())  # Sends the whole string at once
+                last_send_time = time.time()
 
     cv2.imshow('Dual Control Sets', frame)
 
