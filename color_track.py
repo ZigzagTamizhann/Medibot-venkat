@@ -13,7 +13,7 @@ box_size = 150
 
 # --- SERIAL COMMUNICATION ---
 try:
-    ser = serial.Serial('COM5', 9600, timeout=1) # Change 'COM3' to your Arduino Port
+    ser = serial.Serial('COM5', 115200, timeout=1) # Change 'COM3' to your Arduino Port
     print("Serial Connected")
 except:
     print("Serial Not Connected")
