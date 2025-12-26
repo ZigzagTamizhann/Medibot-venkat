@@ -7,7 +7,7 @@ import time
 min_area = 3000        
 max_area_limit = 50000 
 min_speed = 100
-max_speed = 255
+max_speed = 200
 box_size = 150 
 
 # --- WIFI CONNECTION ---
@@ -95,7 +95,7 @@ while True:
 
     # CHANGE 2: Sending Logic இப்போது 'if contours:' block-ஐ விட்டு வெளியே உள்ளது.
     # Detection இருந்தாலும் இல்லாவிட்டாலும் இது வேலை செய்யும்.
-    data_to_send = f"car : {drive_cmd} | Ang : {tilt_cmd}"
+    data_to_send = f"car : {drive_cmd} | Ang : {tilt_cmd} | SPD : {speed}"
     
     if time.time() - last_send_time > send_interval:
         try:

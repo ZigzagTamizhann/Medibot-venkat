@@ -1,7 +1,8 @@
 import sys
 import socket
 import network
-import Subu # type: ignore
+# import Trix # type: ignore
+import Trix # type: ignore
 from machine import Pin # type: ignore
 import time
 
@@ -26,10 +27,10 @@ sock.setblocking(False)
 # --- MOTORS & LED (Same as before) ---
 class CarMotor:
     def __init__(self):
-        self.m1_a = Pin(Subu.IO18, Pin.OUT)
-        self.m1_b = Pin(Subu.IO19, Pin.OUT)
-        self.m2_a = Pin(Subu.IO20, Pin.OUT)
-        self.m2_b = Pin(Subu.IO21, Pin.OUT)
+        self.m1_a = Pin(Trix.IO18, Pin.OUT)
+        self.m1_b = Pin(Trix.IO19, Pin.OUT)
+        self.m2_a = Pin(Trix.IO20, Pin.OUT)
+        self.m2_b = Pin(Trix.IO21, Pin.OUT)
         self.stop() 
 
     def stop(self):
@@ -57,11 +58,11 @@ class LEDMatrix:
   def set_pixel(self, x, y, r, g, b):
     if 0 <= x < self.COLS and 0 <= y < self.ROWS:
       index = (y * self.COLS) + x + 1
-      Subu.setSingleLED(index, (r, g, b))
+      Trix.setSingleLED(index, (r, g, b))
 
   def set_all(self, r, g, b):
     for i in range(1, self.NUM_LEDS + 1):
-      Subu.setSingleLED(i, (r, g, b))
+      Trix.setSingleLED(i, (r, g, b))
 
   def off(self):
     self.set_all(0, 0, 0)
